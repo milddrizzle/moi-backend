@@ -9,7 +9,7 @@ const prisma = new PrismaClient()
 const userRouter = express.Router()
 
 userRouter.post('/', async (req:Request, res: Response) => {
-    const { name, email } = req.body // collect user and email from request body
+    const { name, email, due_date } = req.body // collect user and email from request body
 
     // validate both
 
@@ -25,6 +25,12 @@ userRouter.post('/', async (req:Request, res: Response) => {
         })
         return
     }
+    if (!due_date || typeof(due_date) !== 'string') {
+        res.status(400).json({
+            error: "Due date is either absent or not of correct format - should be a date"
+        })
+        return
+    }
 
 
     // Attempt to create new record
@@ -32,7 +38,8 @@ userRouter.post('/', async (req:Request, res: Response) => {
         await prisma.user.create({
             data: {
                 email: email,
-                name: name
+                name: name,
+                due_date: due_date
             }
         })
         res.json({
@@ -49,8 +56,5 @@ userRouter.post('/', async (req:Request, res: Response) => {
         }
     }
 })
-
-
-
 
 export default userRouter

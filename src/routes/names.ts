@@ -15,7 +15,6 @@ nameRouter.get('/', async (req: Request, res: Response) => {
     gender,
     name_origin,
     meaning,
-    due_date,
     names_avoid,
     version,
     name_type,
@@ -23,7 +22,7 @@ nameRouter.get('/', async (req: Request, res: Response) => {
 
 
   // Build the prompt dynamically based on user specifications
-  let prompt = `Strictly stream 10 unique baby names with their meanings. The format should be "Name: Meaning" with no extra labels, numbers, or empty lines. Ensure all names are unique, and each meaning should be at most 2 sentences long. All first names should have this -- in the beginning. A strict criteria is that all names should be clearly separated using --. Don't add the numbers`;
+  let prompt = `Strictly stream 10 unique baby names with their meanings. The format should be "Name: Meaning" with no extra labels, numbers, or empty lines. Ensure all names are unique, and each meaning should be 80-120 letters long. All first names should have this prefix "--" in the beginning. A strict criteria is that all names should be clearly separated using "--". Don't add the numbers`;
   if (gender) prompt += ` Focus on ${gender} names.`;
   if (name_origin) prompt += ` Limit names to the ${name_origin} origin.`;
   if (meaning) prompt += ` Ensure meanings emphasize ${meaning}.`;

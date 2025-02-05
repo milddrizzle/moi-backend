@@ -18,7 +18,7 @@ const validator_1 = require("validator");
 const prisma = new client_1.PrismaClient();
 const userRouter = express_1.default.Router();
 userRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, email } = req.body; // collect user and email from request body
+    const { name, email, due_date } = req.body; // collect user and email from request body
     // validate both
     if (!name || typeof (name) !== 'string') {
         res.status(400).json({
@@ -32,12 +32,19 @@ userRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
         return;
     }
+    if (!due_date || typeof (due_date) !== 'string') {
+        res.status(400).json({
+            error: "Due date is either absent or not of correct format - should be a date"
+        });
+        return;
+    }
     // Attempt to create new record
     try {
         yield prisma.user.create({
             data: {
                 email: email,
-                name: name
+                name: name,
+                due_date: due_date
             }
         });
         res.json({

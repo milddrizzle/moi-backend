@@ -28,9 +28,9 @@ const openai = new openai_1.OpenAI({
 nameRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, e_1, _b, _c;
     // Extract parameters from the request body
-    const { gender, name_origin, meaning, due_date, names_avoid, version, name_type, } = req.query || {};
+    const { gender, name_origin, meaning, names_avoid, version, name_type, } = req.query || {};
     // Build the prompt dynamically based on user specifications
-    let prompt = `Strictly stream 10 unique baby names with their meanings. The format should be "Name: Meaning" with no extra labels, numbers, or empty lines. Ensure all names are unique, and each meaning should be at most 2 sentences long. All first names should have this -- in the beginning. A strict criteria is that all names should be clearly separated using --. Don't add the numbers`;
+    let prompt = `Strictly stream 10 unique baby names with their meanings. The format should be "Name: Meaning" with no extra labels, numbers, or empty lines. Ensure all names are unique, and each meaning should be 80-120 letters long. All first names should have this prefix "--" in the beginning. A strict criteria is that all names should be clearly separated using "--". Don't add the numbers`;
     if (gender)
         prompt += ` Focus on ${gender} names.`;
     if (name_origin)
