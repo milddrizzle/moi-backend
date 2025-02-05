@@ -1,6 +1,6 @@
 import express from 'express'
 import { Request, Response } from 'express'
-import { PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient } from '.prisma/client'
 import { isEmail } from 'validator'
 
 
