@@ -50,7 +50,7 @@ nameRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         // Start the OpenAI streaming request
         const stream = yield openai.chat.completions.create({
-            model: 'gpt-4-turbo',
+            model: 'gpt-4o-mini',
             messages: [{ role: 'user', content: prompt }],
             max_tokens: 1000,
             stream: true,
