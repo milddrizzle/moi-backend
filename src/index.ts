@@ -9,7 +9,7 @@ const app = express()
 dotenv.config() // allow access to the environment variables from index.ts
 
 app.use(cors({
-    origin: ['https://moi-fr1z.onrender.com', 'http://localhost:5173'],
+    origin: ['https://babynames.motherofinvention.com', 'https://moi-fr1z.onrender.com', 'http://localhost:5173'],
     methods: ["GET", "POST"],
     allowedHeaders: ['Content-Type'],
     credentials: false // disable sending authorization headers or cookies

@@ -11,7 +11,7 @@ const names_1 = __importDefault(require("./routes/names"));
 const app = (0, express_1.default)();
 dotenv_1.default.config(); // allow access to the environment variables from index.ts
 app.use((0, cors_1.default)({
-    origin: ['https://moi-fr1z.onrender.com', 'http://localhost:5173'],
+    origin: ['https://babynames.motherofinvention.com', 'https://moi-fr1z.onrender.com', 'http://localhost:5173'],
     methods: ["GET", "POST"],
     allowedHeaders: ['Content-Type'],
     credentials: false // disable sending authorization headers or cookies
