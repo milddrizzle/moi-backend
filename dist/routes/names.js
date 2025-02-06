@@ -30,7 +30,7 @@ nameRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     // Extract parameters from the request body
     const { gender, name_origin, meaning, names_avoid, version, name_type, } = req.query || {};
     // Build the prompt dynamically based on user specifications
-    let prompt = `Strictly stream 10 unique baby names with their meanings. The format should be "Name: Meaning(sentence)" with no extra labels, numbers, or empty lines. Ensure all names are unique, and each meaning should be 100-140 letters long. All first names should have this prefix "--" in the beginning. A strict criteria is that all names should be clearly separated using "--". Don't add the numbers`;
+    let prompt = `Strictly stream 10 unique baby names with their meanings. The format should be "Name: Meaning" with no extra labels, numbers, or empty lines. Ensure all names are unique, and each meaning should be 100-140 letters long. All first names should have this prefix "--" in the beginning. A strict criteria is that all names should be clearly separated using "--". Don't add the numbers`;
     if (gender)
         prompt += ` Focus on ${gender} names.`;
     if (name_origin)
