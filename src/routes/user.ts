@@ -25,12 +25,6 @@ userRouter.post('/', async (req:Request, res: Response) => {
         })
         return
     }
-    if (!due_date || typeof(due_date) !== 'string') {
-        res.status(400).json({
-            error: "Due date is either absent or not of correct format - should be a date"
-        })
-        return
-    }
 
 
     // Attempt to create new record
