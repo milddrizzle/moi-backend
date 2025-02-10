@@ -8,14 +8,15 @@ This document explains the key API routes on the server and provides step-by-ste
 Purpose:
 The /user route is used to save a user's name and email address to the database.
 Functionality:
-Receives a POST request with a payload containing the user's name and email.
+Receives a POST request with a payload containing the user's name, email and due date.
 Validates the input.
 Saves the user details to the database.
 Returns a success or error response depending on the outcome.
 Example Request (JSON):
 {
   "name": "John Doe",
-  "email": "john.doe@example.com"
+  "email": "john.doe@example.com",
+  "due_date": "2025-02-03"
 }
 Response Example:
 {
@@ -27,15 +28,14 @@ Response Example:
 Purpose:
 The /names route streams baby names along with their meanings from OpenAI.
 Functionality:
-Receives a GET request with query parameters (e.g., gender, name origin, meaning, due date, names to avoid, version, and name type).
+Receives a GET request with query parameters (e.g., gender, name origin, meaning, names to avoid, version, and name type).
 Dynamically builds a prompt based on the query parameters.
 Initiates a streaming request to OpenAI's API.
 Streams the response back to the client using Server-Sent Events (SSE).
 A special message [DONE] is used to communicate the end of the stream.
 Example Query Parameters:
-http://localhost:3900/names?gender=male&name_origin=English&due_date=2025-02-03
+http://localhost:3900/names?gender=male&name_origin=English
 Response Behavior:
-The client will first receive a special message with the zodiac sign if available.
 Followed by streaming chunks of text containing names and their meanings.
 The stream is terminated with a [DONE] message.
 
