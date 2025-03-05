@@ -15,8 +15,39 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const client_1 = require(".prisma/client");
 const validator_1 = require("validator");
+const axios_1 = __importDefault(require("axios"));
 const prisma = new client_1.PrismaClient();
 const userRouter = express_1.default.Router();
+// Function to add user to Klaviyo list  
+function addUserToKlaviyo(user) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const response = yield (0, axios_1.default)({
+                method: 'post',
+                url: 'https://a.klaviyo.com/api/v2/list/' + process.env.KLAVIYO_LIST_ID + '/members',
+                params: {
+                    api_key: process.env.KLAVIYO_API_KEY
+                },
+                data: {
+                    profiles: [
+                        {
+                            email: user.email,
+                            first_name: user.name,
+                            properties: {
+                                due_date: user.due_date
+                            }
+                        }
+                    ]
+                }
+            });
+            return response.data;
+        }
+        catch (error) {
+            console.error('Error adding user to Klaviyo:', error);
+            throw error;
+        }
+    });
+}
 userRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, email, due_date } = req.body; // collect user and email from request body
     // validate both
@@ -34,16 +65,27 @@ userRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
     // Attempt to create new record
     try {
-        yield prisma.user.create({
+        const user = yield prisma.user.create({
             data: {
                 email: email,
                 name: name,
                 due_date: due_date
             }
         });
-        res.json({
-            message: "Successfully added email"
-        });
+        // Add user to Klaviyo  
+        try {
+            yield addUserToKlaviyo(user);
+            res.json({
+                message: "Successfully added user and subscribed to Klaviyo"
+            });
+        }
+        catch (klaviyoError) {
+            // User was created in database but failed to add to Klaviyo  
+            res.status(207).json({
+                message: "User created but failed to subscribe to Klaviyo",
+                error: klaviyoError.message
+            });
+        }
         return;
     }
     catch (error) {

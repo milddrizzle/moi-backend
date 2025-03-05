@@ -2,11 +2,40 @@ import express from 'express'
 import { Request, Response } from 'express'
 import { Prisma, PrismaClient } from '.prisma/client'
 import { isEmail } from 'validator'
+import axios from 'axios'
 
 
 const prisma = new PrismaClient()
 
 const userRouter = express.Router()
+
+// Function to add user to Klaviyo list  
+async function addUserToKlaviyo(user: any) {
+    try {
+        const response = await axios({
+            method: 'post',
+            url: 'https://a.klaviyo.com/api/v2/list/' + process.env.KLAVIYO_LIST_ID + '/members',
+            params: {
+                api_key: process.env.KLAVIYO_API_KEY
+            },
+            data: {
+                profiles: [
+                    {
+                        email: user.email,
+                        first_name: user.name,
+                        properties: {
+                        due_date: user.due_date
+                        }
+                    }
+                ]
+            }
+        })
+        return response.data
+    } catch (error) {
+        console.error('Error adding user to Klaviyo:', error)
+        throw error
+    }
+}
 
 userRouter.post('/', async (req:Request, res: Response) => {
     const { name, email, due_date } = req.body // collect user and email from request body
@@ -29,16 +58,27 @@ userRouter.post('/', async (req:Request, res: Response) => {
 
     // Attempt to create new record
     try {
-        await prisma.user.create({
+        const user = await prisma.user.create({
             data: {
                 email: email,
                 name: name,
                 due_date: due_date
             }
         })
-        res.json({
-            message: "Successfully added email"
-        })
+
+        // Add user to Klaviyo  
+        try {  
+            await addUserToKlaviyo(user)  
+            res.json({  
+                message: "Successfully added user and subscribed to Klaviyo"  
+            })  
+        } catch (klaviyoError: any) {  
+            // User was created in database but failed to add to Klaviyo  
+            res.status(207).json({  
+                message: "User created but failed to subscribe to Klaviyo",  
+                error: klaviyoError.message  
+            })  
+        }
         return
     } catch (error: any) {
         // check if error is generated because of duplicate emails
