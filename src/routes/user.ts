@@ -12,27 +12,48 @@ const userRouter = express.Router()
 // Function to add user to Klaviyo list  
 async function addUserToKlaviyo(user: any) {
     try {
-        const response = await axios({
+        const profileResponse = await axios({
             method: 'post',
-            url: 'https://a.klaviyo.com/api/v2/list/' + process.env.KLAVIYO_LIST_ID + '/members',
-            params: {
-                api_key: process.env.KLAVIYO_API_KEY
-            },
+            url: 'https://a.klaviyo.com/api/profiles',
             headers: {
-                'accept': 'application/json',
-                'content-type': 'application/json'
+                'accept': 'application/vnd.api+json',
+                'revision': '2025-01-15',
+                'content-type': 'application/vnd.api+json',
+                'Authorization': `Klaviyo-API-Key ${process.env.KLAVIYO_API_KEY}`
             },
             data: {
-                profiles: [
-                    {
+                data: {
+                    type: 'profile',
+                    attributes: {
                         email: user.email,
                         first_name: user.name,
-                        due_date: user.due_date
+                        properties: {
+                            due_date: user.due_date
+                        }
                     }
-                ]
+                }
             }
-        })
-        return response.data
+        });
+
+        // Then add the profile to the list
+        const listResponse = await axios({
+            method: 'post',
+            url: `https://a.klaviyo.com/api/lists/${process.env.KLAVIYO_LIST_ID}/relationships/profiles`,
+            headers: {
+                'accept': 'application/vnd.api+json',
+                'revision': '2025-01-15',
+                'content-type': 'application/vnd.api+json',
+                'Authorization': `Klaviyo-API-Key ${process.env.KLAVIYO_API_KEY}`
+            },
+            data: {
+                data: [{
+                    type: 'profile',
+                    id: profileResponse.data.data.id
+                }]
+            }
+        });
+
+        return listResponse.data;
     } catch (error) {
         console.error('Error adding user to Klaviyo:', error)
         throw error

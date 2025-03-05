@@ -22,27 +22,46 @@ const userRouter = express_1.default.Router();
 function addUserToKlaviyo(user) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const response = yield (0, axios_1.default)({
+            const profileResponse = yield (0, axios_1.default)({
                 method: 'post',
-                url: 'https://a.klaviyo.com/api/v2/list/' + process.env.KLAVIYO_LIST_ID + '/members',
-                params: {
-                    api_key: process.env.KLAVIYO_API_KEY
-                },
+                url: 'https://a.klaviyo.com/api/profiles',
                 headers: {
-                    'accept': 'application/json',
-                    'content-type': 'application/json'
+                    'accept': 'application/vnd.api+json',
+                    'revision': '2025-01-15',
+                    'content-type': 'application/vnd.api+json',
+                    'Authorization': `Klaviyo-API-Key ${process.env.KLAVIYO_API_KEY}`
                 },
                 data: {
-                    profiles: [
-                        {
+                    data: {
+                        type: 'profile',
+                        attributes: {
                             email: user.email,
                             first_name: user.name,
-                            due_date: user.due_date
+                            properties: {
+                                due_date: user.due_date
+                            }
                         }
-                    ]
+                    }
                 }
             });
-            return response.data;
+            // Then add the profile to the list
+            const listResponse = yield (0, axios_1.default)({
+                method: 'post',
+                url: `https://a.klaviyo.com/api/lists/${process.env.KLAVIYO_LIST_ID}/relationships/profiles`,
+                headers: {
+                    'accept': 'application/vnd.api+json',
+                    'revision': '2025-01-15',
+                    'content-type': 'application/vnd.api+json',
+                    'Authorization': `Klaviyo-API-Key ${process.env.KLAVIYO_API_KEY}`
+                },
+                data: {
+                    data: [{
+                            type: 'profile',
+                            id: profileResponse.data.data.id
+                        }]
+                }
+            });
+            return listResponse.data;
         }
         catch (error) {
             console.error('Error adding user to Klaviyo:', error);
