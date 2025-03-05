@@ -28,14 +28,16 @@ function addUserToKlaviyo(user) {
                 params: {
                     api_key: process.env.KLAVIYO_API_KEY
                 },
+                headers: {
+                    'accept': 'application/json',
+                    'content-type': 'application/json'
+                },
                 data: {
                     profiles: [
                         {
                             email: user.email,
                             first_name: user.name,
-                            properties: {
-                                due_date: user.due_date
-                            }
+                            due_date: user.due_date
                         }
                     ]
                 }
@@ -80,7 +82,7 @@ userRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* (
             });
         }
         catch (klaviyoError) {
-            // User was created in database but failed to add to Klaviyo  
+            // User was created in database but failed to add to Klaviyo
             res.status(207).json({
                 message: "User created but failed to subscribe to Klaviyo",
                 error: klaviyoError.message

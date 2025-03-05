@@ -18,14 +18,16 @@ async function addUserToKlaviyo(user: any) {
             params: {
                 api_key: process.env.KLAVIYO_API_KEY
             },
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/json'
+            },
             data: {
                 profiles: [
                     {
                         email: user.email,
                         first_name: user.name,
-                        properties: {
                         due_date: user.due_date
-                        }
                     }
                 ]
             }
@@ -67,17 +69,17 @@ userRouter.post('/', async (req:Request, res: Response) => {
         })
 
         // Add user to Klaviyo  
-        try {  
-            await addUserToKlaviyo(user)  
-            res.json({  
-                message: "Successfully added user and subscribed to Klaviyo"  
-            })  
-        } catch (klaviyoError: any) {  
-            // User was created in database but failed to add to Klaviyo  
-            res.status(207).json({  
-                message: "User created but failed to subscribe to Klaviyo",  
-                error: klaviyoError.message  
-            })  
+        try {
+            await addUserToKlaviyo(user)
+            res.json({
+                message: "Successfully added user and subscribed to Klaviyo"
+            })
+        } catch (klaviyoError: any) {
+            // User was created in database but failed to add to Klaviyo
+            res.status(207).json({
+                message: "User created but failed to subscribe to Klaviyo",
+                error: klaviyoError.message
+            })
         }
         return
     } catch (error: any) {
