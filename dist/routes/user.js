@@ -76,7 +76,11 @@ userRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
         // Add user to Klaviyo  
         try {
-            yield addUserToKlaviyo(user);
+            yield addUserToKlaviyo({
+                email: email,
+                name: name,
+                due_date: due_date
+            });
             res.json({
                 message: "Successfully added user and subscribed to Klaviyo"
             });

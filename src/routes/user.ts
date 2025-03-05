@@ -70,7 +70,11 @@ userRouter.post('/', async (req:Request, res: Response) => {
 
         // Add user to Klaviyo  
         try {
-            await addUserToKlaviyo(user)
+            await addUserToKlaviyo({
+                email: email,
+                name: name,
+                due_date: due_date
+            })
             res.json({
                 message: "Successfully added user and subscribed to Klaviyo"
             })
